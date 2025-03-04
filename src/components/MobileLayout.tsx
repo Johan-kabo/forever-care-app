@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Home, Calendar, MessageSquare, User } from "lucide-react";
+import { Home, Calendar, MessageCircle, User, Bell } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +15,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   const navItems = [
     { icon: <Home size={24} />, path: "/", label: "Home" },
     { icon: <Calendar size={24} />, path: "/calendar", label: "Calendar" },
-    { icon: <MessageSquare size={24} />, path: "/messages", label: "Messages" },
+    { icon: <MessageCircle size={22} />, path: "/messages", label: "Messages" },
     { icon: <User size={24} />, path: "/profile", label: "Profile" },
   ];
 
@@ -58,6 +58,8 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                   ? "text-health-primary"
                   : "text-gray-400"
               ),
+              fill: currentPath === item.path ? "#4458E7" : "transparent",
+              strokeWidth: 1.5,
             })}
           </Link>
         ))}

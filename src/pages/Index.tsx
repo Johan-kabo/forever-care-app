@@ -6,6 +6,7 @@ import SearchBar from "@/components/SearchBar";
 import CategoryTabs from "@/components/CategoryTabs";
 import SectionHeader from "@/components/SectionHeader";
 import DoctorsList from "@/components/DoctorsList";
+import { Bell } from "lucide-react";
 
 const Index = () => {
   // Données des médecins
@@ -58,17 +59,31 @@ const Index = () => {
   return (
     <MobileLayout>
       <div className="flex flex-col min-h-full">
-        {/* Header avec gradient */}
-        <div className="bg-health-primary px-4 pt-4 pb-6 rounded-b-[30px]">
-          <UserHeader 
-            name="Savannah Nguyen" 
-            avatarUrl="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=464&auto=format&fit=crop" 
-          />
+        {/* Header with gradient */}
+        <div className="bg-health-primary px-4 pt-4 pb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-white overflow-hidden border-2 border-white">
+                <img 
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=464&auto=format&fit=crop" 
+                  alt="avatar"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="text-white">
+                <p className="text-sm font-light">Hello, Welcome 👋</p>
+                <h2 className="font-bold text-xl">Savannah Nguyen</h2>
+              </div>
+            </div>
+            <button className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+              <Bell size={20} color="white" />
+            </button>
+          </div>
           <SearchBar />
         </div>
 
-        {/* Contenu principal */}
-        <div className="px-4 pt-6 pb-20 flex-1">
+        {/* Main content */}
+        <div className="px-4 pt-4 pb-20 flex-1">
           <CategoryTabs />
           
           <div className="mb-8">
