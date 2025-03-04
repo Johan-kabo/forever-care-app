@@ -1,12 +1,12 @@
 
 import React from "react";
 import MobileLayout from "@/components/MobileLayout";
-import UserHeader from "@/components/UserHeader";
 import SearchBar from "@/components/SearchBar";
 import CategoryTabs from "@/components/CategoryTabs";
 import SectionHeader from "@/components/SectionHeader";
 import DoctorsList from "@/components/DoctorsList";
 import { Bell } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   // Données des médecins
@@ -75,9 +75,9 @@ const Index = () => {
                 <h2 className="font-bold text-xl">Savannah Nguyen</h2>
               </div>
             </div>
-            <button className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
+            <Link to="/notifications" className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
               <Bell size={20} color="white" />
-            </button>
+            </Link>
           </div>
           <SearchBar />
         </div>

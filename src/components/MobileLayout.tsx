@@ -17,6 +17,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
     { icon: <Calendar size={24} />, path: "/calendar", label: "Calendar" },
     { icon: <MessageCircle size={22} />, path: "/messages", label: "Messages" },
     { icon: <User size={24} />, path: "/profile", label: "Profile" },
+    { icon: <Bell size={24} />, path: "/notifications", label: "Notifications" }
   ];
 
   return (
@@ -39,7 +40,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
       </main>
 
       {/* Bottom Navigation */}
-      <div className="h-16 bg-white border-t border-gray-200 grid grid-cols-4 items-center">
+      <div className="h-16 bg-white border-t border-gray-200 grid grid-cols-5 items-center">
         {navItems.map((item) => (
           <Link
             key={item.path}
