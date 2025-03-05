@@ -64,9 +64,6 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
           </Link>
         ))}
       </div>
-
-      {/* iPhone Home Indicator */}
-      <div className="h-1 w-1/3 mx-auto bg-black rounded-full my-2"></div>
     </div>
   );
 };
