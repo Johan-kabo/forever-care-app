@@ -22,12 +22,12 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
   return (
     <div className="max-w-md mx-auto min-h-screen relative bg-white overflow-hidden flex flex-col">
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto pb-16">
         {children}
       </main>
 
-      {/* Bottom Navigation */}
-      <div className="h-16 bg-white border-t border-gray-200 grid grid-cols-4 items-center">
+      {/* Bottom Navigation - Fixed */}
+      <div className="h-16 bg-white border-t border-gray-200 grid grid-cols-4 items-center fixed bottom-0 left-0 right-0 max-w-md mx-auto">
         {navItems.map((item) => (
           <Link
             key={item.path}
