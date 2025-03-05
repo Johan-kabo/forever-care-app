@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import FavouriteDoctors from "./pages/FavouriteDoctors";
 import TopDoctors from "./pages/TopDoctors";
 import Notifications from "./pages/Notifications";
+import DoctorDetails from "./pages/DoctorDetails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/favourite-doctors" element={<FavouriteDoctors />} />
           <Route path="/top-doctors" element={<TopDoctors />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/doctor/:id" element={<DoctorDetails />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

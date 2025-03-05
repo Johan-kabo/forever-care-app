@@ -1,8 +1,10 @@
 
 import React from "react";
 import { Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface DoctorCardProps {
+  id?: string;
   name: string;
   specialty: string;
   rating: number;
@@ -11,15 +13,25 @@ interface DoctorCardProps {
 }
 
 const DoctorCard: React.FC<DoctorCardProps> = ({
+  id = "1",
   name,
   specialty,
   rating,
   imageUrl,
   horizontal = false,
 }) => {
+  const navigate = useNavigate();
+  
+  const handleClick = () => {
+    navigate(`/doctor/${id}`);
+  };
+  
   if (horizontal) {
     return (
-      <div className="flex items-center gap-4 p-3 bg-white rounded-xl card-shadow mb-4 animate-slideUp">
+      <div 
+        className="flex items-center gap-4 p-3 bg-white rounded-xl card-shadow mb-4 animate-slideUp cursor-pointer"
+        onClick={handleClick}
+      >
         <div className="w-20 h-20 rounded-xl overflow-hidden">
           <img
             src={imageUrl}
@@ -50,7 +62,10 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
   }
 
   return (
-    <div className="rounded-xl overflow-hidden bg-white card-shadow animate-slideUp">
+    <div 
+      className="rounded-xl overflow-hidden bg-white card-shadow animate-slideUp cursor-pointer"
+      onClick={handleClick}
+    >
       <div className="aspect-square overflow-hidden">
         <img
           src={imageUrl}

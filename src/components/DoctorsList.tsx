@@ -24,6 +24,7 @@ const DoctorsList: React.FC<DoctorsListProps> = ({ doctors, horizontal = false }
         {doctors.map((doctor, index) => (
           <DoctorCard
             key={doctor.id}
+            id={doctor.id}
             name={doctor.name}
             specialty={doctor.clinic ? `${doctor.specialty} | ${doctor.clinic}` : doctor.specialty}
             rating={doctor.rating}
@@ -40,6 +41,7 @@ const DoctorsList: React.FC<DoctorsListProps> = ({ doctors, horizontal = false }
       {doctors.map((doctor) => (
         <DoctorCard
           key={doctor.id}
+          id={doctor.id}
           name={doctor.name}
           specialty={doctor.specialty}
           rating={doctor.rating}
