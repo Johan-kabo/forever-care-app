@@ -21,18 +21,6 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
 
   return (
     <div className="max-w-md mx-auto min-h-screen relative bg-white overflow-hidden flex flex-col">
-      {/* Status Bar - simulated */}
-      <div className="h-10 bg-health-primary w-full flex justify-between items-center px-4 text-white text-xs">
-        <div>9:41</div>
-        <div className="flex items-center gap-1">
-          <div className="h-2 w-2 rounded-full bg-white"></div>
-          <div className="h-2 w-2 rounded-full bg-white"></div>
-          <div className="h-2 w-2 rounded-full bg-white"></div>
-          <div className="h-2 w-2 rounded-full bg-white"></div>
-          <div className="h-2 w-2 rounded-full bg-white"></div>
-        </div>
-      </div>
-
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
         {children}
