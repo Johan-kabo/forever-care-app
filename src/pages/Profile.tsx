@@ -53,18 +53,22 @@ const Profile = () => {
         <ProfileMenuItem 
           icon={<User size={22} className="text-white" />} 
           title="Profil" 
+          to="/profile/details"
         />
         <ProfileMenuItem 
           icon={<Settings size={22} className="text-white" />} 
           title="Paramètres" 
+          to="/settings"
         />
         <ProfileMenuItem 
           icon={<HelpCircle size={22} className="text-white" />} 
           title="Aide" 
+          to="/help"
         />
         <ProfileMenuItem 
           icon={<LogOut size={22} className="text-white" />} 
           title="Déconnexion" 
+          to="/logout"
         />
       </div>
     </MobileLayout>
