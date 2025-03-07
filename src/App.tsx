@@ -13,6 +13,7 @@ import TopDoctors from "./pages/TopDoctors";
 import Notifications from "./pages/Notifications";
 import DoctorDetails from "./pages/DoctorDetails";
 import Settings from "./pages/Settings";
+import NotificationSettings from "./pages/NotificationSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,7 +34,7 @@ const App = () => (
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/doctor/:id" element={<DoctorDetails />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/settings/notifications" element={<NotFound />} />
+          <Route path="/settings/notifications" element={<NotificationSettings />} />
           <Route path="/settings/password" element={<NotFound />} />
           <Route path="/settings/delete-account" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
