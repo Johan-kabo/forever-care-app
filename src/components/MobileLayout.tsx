@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Home, Calendar, MessageCircle, User } from "lucide-react";
+import { Home, Heart, ShoppingBag, Bell } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -14,9 +14,9 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
 
   const navItems = [
     { icon: <Home size={24} />, path: "/", label: "Home" },
-    { icon: <Calendar size={24} />, path: "/calendar", label: "Calendar" },
-    { icon: <MessageCircle size={22} />, path: "/messages", label: "Messages" },
-    { icon: <User size={24} />, path: "/profile", label: "Profile" }
+    { icon: <Heart size={24} />, path: "/calendar", label: "Favorites" },
+    { icon: <ShoppingBag size={24} />, path: "/messages", label: "Shop" },
+    { icon: <Bell size={24} />, path: "/profile", label: "Notifications" }
   ];
 
   return (
@@ -26,13 +26,9 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
         {children}
       </main>
 
-      {/* Bottom Navigation - Fun Design */}
-      <div className="h-20 fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white">
-        {/* Curved background with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-100 via-blue-50 to-purple-100 rounded-t-3xl shadow-lg"></div>
-        
-        {/* Nav items */}
-        <div className="relative grid grid-cols-4 h-full">
+      {/* Bottom Navigation - Simple Design */}
+      <div className="h-20 fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-100">
+        <div className="grid grid-cols-4 h-full">
           {navItems.map((item) => {
             const isActive = currentPath === item.path;
             
@@ -40,42 +36,27 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className="flex flex-col items-center justify-center"
+                className="flex flex-col items-center justify-center relative"
               >
-                {/* Indicator for active item */}
+                {React.cloneElement(item.icon as React.ReactElement, {
+                  className: cn(
+                    "transition-colors duration-200",
+                    isActive ? "text-amber-600" : "text-gray-400"
+                  ),
+                  strokeWidth: isActive ? 2 : 1.5,
+                })}
+                
+                {/* Small dot indicator for active item */}
                 {isActive && (
-                  <div className="absolute top-0 w-12 h-1 bg-health-primary rounded-full animate-pulse" />
+                  <div className="absolute bottom-2 w-5 h-1 bg-amber-600 rounded-full" />
                 )}
-                
-                {/* Icon container with animations */}
-                <div 
-                  className={cn(
-                    "flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300",
-                    isActive 
-                      ? "bg-health-primary shadow-md shadow-health-primary/20 -translate-y-2" 
-                      : "bg-white border border-gray-100 hover:bg-health-secondary hover:-translate-y-1"
-                  )}
-                >
-                  {React.cloneElement(item.icon as React.ReactElement, {
-                    className: cn(
-                      "transition-colors duration-200",
-                      isActive ? "text-white" : "text-gray-500"
-                    ),
-                    strokeWidth: isActive ? 2 : 1.5,
-                  })}
-                </div>
-                
-                {/* Label */}
-                <span className={cn(
-                  "text-xs mt-1 font-medium",
-                  isActive ? "text-health-primary" : "text-gray-400"
-                )}>
-                  {item.label}
-                </span>
               </Link>
             );
           })}
         </div>
+        
+        {/* Horizontal line indicator at the bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200"></div>
       </div>
     </div>
   );
