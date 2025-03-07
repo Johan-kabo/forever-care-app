@@ -1,17 +1,20 @@
 
-import React from "react";
+import React, { useState } from "react";
 import MobileLayout from "@/components/MobileLayout";
 import { User, Settings, HelpCircle, LogOut, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import LogoutDialog from "@/components/LogoutDialog";
 
 const ProfileMenuItem = ({ 
   icon, 
   title, 
-  to = "#" 
+  to = "#",
+  hideChevron = false
 }: { 
   icon: React.ReactNode; 
   title: string; 
   to?: string;
+  hideChevron?: boolean;
 }) => (
   <Link to={to} className="flex items-center justify-between p-4 bg-white rounded-xl mb-3">
     <div className="flex items-center gap-3">
@@ -20,11 +23,18 @@ const ProfileMenuItem = ({
       </div>
       <span className="font-medium text-base">{title}</span>
     </div>
-    <ChevronRight className="text-gray-400" size={20} />
+    {!hideChevron && <ChevronRight className="text-gray-400" size={20} />}
   </Link>
 );
 
 const Profile = () => {
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+
+  const handleLogoutClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowLogoutDialog(true);
+  };
+
   return (
     <MobileLayout>
       {/* User Profile Header */}
@@ -65,12 +75,32 @@ const Profile = () => {
           title="Aide" 
           to="/help"
         />
-        <ProfileMenuItem 
-          icon={<LogOut size={22} className="text-white" />} 
-          title="Déconnexion" 
-          to="/logout"
-        />
+        <a
+          href="#"
+          onClick={handleLogoutClick}
+          className="flex items-center p-4 bg-white rounded-xl mb-3"
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-health-primary flex items-center justify-center">
+              <LogOut size={22} className="text-white" />
+            </div>
+            <span className="font-medium text-base">Déconnexion</span>
+          </div>
+        </a>
       </div>
+
+      {/* Logout Confirmation Dialog */}
+      {showLogoutDialog && (
+        <LogoutDialog
+          onClose={() => setShowLogoutDialog(false)}
+          onConfirm={() => {
+            // Handle logout logic here
+            console.log("User logged out");
+            setShowLogoutDialog(false);
+            // Redirect to login page or perform other logout actions
+          }}
+        />
+      )}
     </MobileLayout>
   );
 };
