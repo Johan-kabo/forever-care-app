@@ -41,14 +41,14 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ children }) => {
                 {React.cloneElement(item.icon as React.ReactElement, {
                   className: cn(
                     "transition-colors duration-200",
-                    isActive ? "text-amber-600" : "text-gray-400"
+                    isActive ? "text-blue-600" : "text-gray-400"
                   ),
                   strokeWidth: isActive ? 2 : 1.5,
                 })}
                 
                 {/* Small dot indicator for active item */}
                 {isActive && (
-                  <div className="absolute bottom-2 w-5 h-1 bg-amber-600 rounded-full" />
+                  <div className="absolute bottom-2 w-5 h-1 bg-blue-600 rounded-full" />
                 )}
               </Link>
             );
