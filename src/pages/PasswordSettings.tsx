@@ -4,6 +4,16 @@ import MobileLayout from "@/components/MobileLayout";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const PasswordSettings = () => {
   const navigate = useNavigate();
@@ -13,22 +23,34 @@ const PasswordSettings = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const validateForm = () => {
     if (newPassword !== confirmPassword) {
       toast.error("Les nouveaux mots de passe ne correspondent pas");
-      return;
+      return false;
     }
 
     if (newPassword.length < 8) {
       toast.error("Le mot de passe doit contenir au moins 8 caractères");
-      return;
+      return false;
     }
     
+    return true;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (validateForm()) {
+      setShowConfirmDialog(true);
+    }
+  };
+
+  const confirmPasswordChange = () => {
     // Here you would normally make an API call to change the password
     toast.success("Mot de passe mis à jour avec succès");
+    setShowConfirmDialog(false);
     navigate(-1);
   };
 
@@ -129,6 +151,24 @@ const PasswordSettings = () => {
           </button>
         </form>
       </div>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmation</AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir modifier votre mot de passe ? Cette action vous déconnectera de tous vos appareils.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmPasswordChange} className="bg-health-primary hover:bg-health-primary/90">
+              Confirmer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </MobileLayout>
   );
 };
