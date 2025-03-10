@@ -15,6 +15,8 @@ import DoctorDetails from "./pages/DoctorDetails";
 import Settings from "./pages/Settings";
 import NotificationSettings from "./pages/NotificationSettings";
 import NotFound from "./pages/NotFound";
+import Help from "./pages/Help";
+import ProfileDetails from "./pages/ProfileDetails";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,7 @@ const App = () => (
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/details" element={<ProfileDetails />} />
           <Route path="/favourite-doctors" element={<FavouriteDoctors />} />
           <Route path="/top-doctors" element={<TopDoctors />} />
           <Route path="/notifications" element={<Notifications />} />
@@ -37,6 +40,7 @@ const App = () => (
           <Route path="/settings/notifications" element={<NotificationSettings />} />
           <Route path="/settings/password" element={<NotFound />} />
           <Route path="/settings/delete-account" element={<NotFound />} />
+          <Route path="/help" element={<Help />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
