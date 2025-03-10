@@ -1,24 +1,60 @@
 
 import React, { useState } from "react";
 import MobileLayout from "@/components/MobileLayout";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, BellRing } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+
+type NotificationSetting = {
+  id: string;
+  title: string;
+  description: string;
+  enabled: boolean;
+};
 
 const NotificationSettings = () => {
   const navigate = useNavigate();
-  const [settings, setSettings] = useState({
-    general: true,
-    sound: true,
-    call: true,
-    vibration: false
-  });
+  const [settings, setSettings] = useState<NotificationSetting[]>([
+    {
+      id: "appointments",
+      title: "Rendez-vous",
+      description: "Notifications pour les rendez-vous à venir et les rappels",
+      enabled: true
+    },
+    {
+      id: "messages",
+      title: "Messages",
+      description: "Notifications pour les nouveaux messages des médecins",
+      enabled: true
+    },
+    {
+      id: "updates",
+      title: "Mises à jour",
+      description: "Notifications pour les mises à jour de l'application",
+      enabled: false
+    },
+    {
+      id: "promotions",
+      title: "Promotions",
+      description: "Offres et promotions de nos partenaires",
+      enabled: false
+    }
+  ]);
 
-  const handleToggle = (setting: keyof typeof settings) => {
-    setSettings(prev => ({
-      ...prev,
-      [setting]: !prev[setting]
-    }));
+  const handleToggle = (id: string) => {
+    setSettings(prev => prev.map(setting => 
+      setting.id === id ? { ...setting, enabled: !setting.enabled } : setting
+    ));
+    
+    // Show toast for UX feedback
+    toast.success("Paramètres de notification mis à jour");
+  };
+
+  const saveSettings = () => {
+    // Here you would typically send these settings to an API
+    toast.success("Paramètres de notification enregistrés");
+    navigate(-1);
   };
 
   return (
@@ -35,40 +71,29 @@ const NotificationSettings = () => {
 
       {/* Notification Options */}
       <div className="px-4 space-y-6">
-        <div className="flex items-center justify-between">
-          <span className="text-base font-medium">Notification générale</span>
-          <Switch 
-            checked={settings.general}
-            onCheckedChange={() => handleToggle('general')}
-            className="data-[state=checked]:bg-health-primary"
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-base font-medium">Son</span>
-          <Switch 
-            checked={settings.sound}
-            onCheckedChange={() => handleToggle('sound')}
-            className="data-[state=checked]:bg-health-primary"
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-base font-medium">Appel sonore</span>
-          <Switch 
-            checked={settings.call}
-            onCheckedChange={() => handleToggle('call')}
-            className="data-[state=checked]:bg-health-primary"
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-base font-medium">Vibrer</span>
-          <Switch 
-            checked={settings.vibration}
-            onCheckedChange={() => handleToggle('vibration')}
-            className="data-[state=checked]:bg-health-primary"
-          />
+        {settings.map((setting) => (
+          <div key={setting.id} className="flex flex-col space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <span className="text-base font-medium">{setting.title}</span>
+                <p className="text-sm text-gray-500">{setting.description}</p>
+              </div>
+              <Switch 
+                checked={setting.enabled}
+                onCheckedChange={() => handleToggle(setting.id)}
+                className="data-[state=checked]:bg-health-primary"
+              />
+            </div>
+          </div>
+        ))}
+        
+        <div className="pt-4">
+          <button 
+            onClick={saveSettings}
+            className="w-full bg-health-primary text-white py-3 rounded-xl font-medium"
+          >
+            Enregistrer les modifications
+          </button>
         </div>
       </div>
     </MobileLayout>
