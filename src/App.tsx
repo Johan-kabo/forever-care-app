@@ -17,6 +17,8 @@ import NotificationSettings from "./pages/NotificationSettings";
 import NotFound from "./pages/NotFound";
 import Help from "./pages/Help";
 import ProfileDetails from "./pages/ProfileDetails";
+import PasswordSettings from "./pages/PasswordSettings";
+import DeleteAccount from "./pages/DeleteAccount";
 
 const queryClient = new QueryClient();
 
@@ -38,8 +40,8 @@ const App = () => (
           <Route path="/doctor/:id" element={<DoctorDetails />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/notifications" element={<NotificationSettings />} />
-          <Route path="/settings/password" element={<NotFound />} />
-          <Route path="/settings/delete-account" element={<NotFound />} />
+          <Route path="/settings/password" element={<PasswordSettings />} />
+          <Route path="/settings/delete-account" element={<DeleteAccount />} />
           <Route path="/help" element={<Help />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
