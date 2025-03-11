@@ -1,7 +1,7 @@
 
 import React from "react";
 import MobileLayout from "@/components/MobileLayout";
-import { ChevronLeft, Calendar, HeartPulse, Stethoscope, Baby, BrainCircuit, Thermometer, Eye, Tooth } from "lucide-react";
+import { ChevronLeft, Calendar, HeartPulse, Stethoscope, Baby, BrainCircuit, Thermometer, Eye, Smile } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import DoctorsList from "@/components/DoctorsList";
 
@@ -106,7 +106,7 @@ const servicesData = {
   },
   dentistry: {
     name: "Dentiste",
-    icon: <Tooth size={32} className="text-white" />,
+    icon: <Smile size={32} className="text-white" />,
     color: "#8338EC",
     description: "La dentisterie est l'art et la science du diagnostic, du traitement et de la prévention des maladies des dents.",
     doctors: [

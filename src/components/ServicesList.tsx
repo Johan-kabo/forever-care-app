@@ -1,7 +1,7 @@
 
 import React from "react";
 import ServiceCard from "./ServiceCard";
-import { HeartPulse, Stethoscope, Baby, BrainCircuit, Thermometer, Eye, Tooth } from "lucide-react";
+import { HeartPulse, Stethoscope, Baby, BrainCircuit, Thermometer, Eye, Smile } from "lucide-react";
 
 const services = [
   {
@@ -43,7 +43,7 @@ const services = [
   {
     id: "dentistry",
     name: "Dentiste",
-    icon: <Tooth size={24} color="white" />,
+    icon: <Smile size={24} color="white" />,
     color: "#8338EC"
   },
 ];
