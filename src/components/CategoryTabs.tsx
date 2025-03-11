@@ -9,10 +9,10 @@ interface Category {
 }
 
 const categories: Category[] = [
-  { id: "all", name: "All", emoji: "🔥" },
-  { id: "fever", name: "Fever", emoji: "🤒" },
-  { id: "cough", name: "Cough", emoji: "😷" },
-  { id: "nausea", name: "Nausea", emoji: "🤢" },
+  { id: "all", name: "Tous", emoji: "👥" },
+  { id: "urgent", name: "Urgent", emoji: "⚡" },
+  { id: "specialists", name: "Spécialistes", emoji: "👨‍⚕️" },
+  { id: "general", name: "Généraliste", emoji: "🏥" },
 ];
 
 const CategoryTabs: React.FC = () => {
