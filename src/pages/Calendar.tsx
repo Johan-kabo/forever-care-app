@@ -1,13 +1,17 @@
 
 import React, { useState } from "react";
 import MobileLayout from "@/components/MobileLayout";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import AppointmentForm from "@/components/AppointmentForm";
+import { toast } from "@/hooks/use-toast";
 
 // Sample appointments data
-const appointments = [
+const initialAppointments = [
   { id: 1, date: "2023-11-15", time: "10:00", doctorName: "Dr. Emma Wilson", specialty: "Cardiologue" },
   { id: 2, date: "2023-11-20", time: "14:30", doctorName: "Dr. Michael Chen", specialty: "Dermatologue" },
   { id: 3, date: "2023-11-28", time: "09:15", doctorName: "Dr. Sarah Johnson", specialty: "Neurologue" },
@@ -16,6 +20,8 @@ const appointments = [
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [appointments, setAppointments] = useState(initialAppointments);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -30,6 +36,20 @@ const Calendar = () => {
   };
   
   const selectedAppointments = selectedDate ? getAppointmentsForDate(selectedDate) : [];
+
+  const handleAddAppointment = (appointment: any) => {
+    const newAppointment = {
+      id: appointments.length + 1,
+      ...appointment
+    };
+    
+    setAppointments([...appointments, newAppointment]);
+    setIsDialogOpen(false);
+    toast({
+      title: "Rendez-vous confirmé",
+      description: `Vous avez un rendez-vous le ${format(parseISO(appointment.date), "d MMMM yyyy", { locale: fr })} à ${appointment.time}`,
+    });
+  };
 
   return (
     <MobileLayout>
@@ -77,7 +97,7 @@ const Calendar = () => {
                 key={day.toString()}
                 onClick={() => setSelectedDate(day)}
                 className={cn(
-                  "h-10 rounded-lg flex items-center justify-center text-sm",
+                  "h-10 rounded-lg flex items-center justify-center text-sm relative",
                   isToday(day) && "border border-health-primary",
                   isSelected && "bg-health-primary text-white",
                   !isSelected && hasAppointment && "bg-blue-100"
@@ -92,29 +112,48 @@ const Calendar = () => {
           })}
         </div>
 
-        {/* Appointments List */}
-        {selectedDate && (
-          <div>
-            <h3 className="font-medium text-lg mb-3">
-              {format(selectedDate, "d MMMM yyyy", { locale: fr })}
-            </h3>
+        {/* Appointments List and Add Button */}
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="font-medium text-lg">
+            {selectedDate ? format(selectedDate, "d MMMM yyyy", { locale: fr }) : "Vos rendez-vous"}
+          </h3>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="flex items-center gap-1 bg-health-primary text-white hover:bg-health-primary/90 border-none">
+                <Plus size={16} />
+                <span>Nouveau</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Prendre un rendez-vous</DialogTitle>
+              </DialogHeader>
+              <AppointmentForm 
+                onSubmit={handleAddAppointment} 
+                initialDate={selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
             
-            {selectedAppointments.length > 0 ? (
-              <div className="space-y-3">
-                {selectedAppointments.map((appointment) => (
-                  <div key={appointment.id} className="bg-white p-4 rounded-xl border border-gray-200">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-semibold">{appointment.doctorName}</h4>
-                      <span className="text-sm text-health-primary">{appointment.time}</span>
-                    </div>
-                    <p className="text-sm text-gray-500">{appointment.specialty}</p>
+        {selectedDate ? (
+          selectedAppointments.length > 0 ? (
+            <div className="space-y-3">
+              {selectedAppointments.map((appointment) => (
+                <div key={appointment.id} className="bg-white p-4 rounded-xl border border-gray-200">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-semibold">{appointment.doctorName}</h4>
+                    <span className="text-sm text-health-primary">{appointment.time}</span>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">Pas de rendez-vous ce jour</p>
-            )}
-          </div>
+                  <p className="text-sm text-gray-500">{appointment.specialty}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">Pas de rendez-vous ce jour</p>
+          )
+        ) : (
+          <p className="text-gray-500">Sélectionnez une date pour voir vos rendez-vous</p>
         )}
       </div>
     </MobileLayout>

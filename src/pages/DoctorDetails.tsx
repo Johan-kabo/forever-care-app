@@ -3,6 +3,9 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Star, ArrowLeft, Users, Calendar, MessageCircle, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import AppointmentForm from "@/components/AppointmentForm";
+import { toast } from "@/hooks/use-toast";
 
 const DoctorDetails = () => {
   const { id } = useParams();
@@ -22,6 +25,15 @@ const DoctorDetails = () => {
     about: "Dr. Carly Angel is the top most immunologists specialist in Crist Hospital in London, UK."
   };
 
+  const handleAppointmentSubmit = (appointmentData: any) => {
+    console.log("Appointment created:", appointmentData);
+    toast({
+      title: "Rendez-vous confirmé",
+      description: `Vous avez un rendez-vous avec ${doctor.name} le ${appointmentData.date} à ${appointmentData.time}`,
+    });
+    navigate('/calendar');
+  };
+
   return (
     <div className="max-w-md mx-auto min-h-screen bg-white flex flex-col">
       {/* Header */}
@@ -32,7 +44,7 @@ const DoctorDetails = () => {
         >
           <ArrowLeft size={24} />
         </button>
-        <h1 className="text-xl font-semibold mx-auto">My Appointment</h1>
+        <h1 className="text-xl font-semibold mx-auto">Mon Rendez-vous</h1>
       </div>
       
       {/* Doctor Image */}
@@ -107,10 +119,25 @@ const DoctorDetails = () => {
           </p>
         </div>
         
-        {/* Voice Call Button */}
-        <button className="w-full bg-health-primary text-white py-3 rounded-xl flex items-center justify-center gap-2 mb-6">
+        {/* Appointment Buttons */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <button className="w-full bg-health-primary text-white py-3 rounded-xl flex items-center justify-center gap-2 mb-4">
+              <Calendar size={20} />
+              <span>Prendre rendez-vous</span>
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Prendre un rendez-vous avec {doctor.name}</DialogTitle>
+            </DialogHeader>
+            <AppointmentForm onSubmit={handleAppointmentSubmit} />
+          </DialogContent>
+        </Dialog>
+        
+        <button className="w-full border border-health-primary text-health-primary py-3 rounded-xl flex items-center justify-center gap-2">
           <Phone size={20} />
-          <span>Voice Call (14.30 - 15.00 PM)</span>
+          <span>Appeler directement</span>
         </button>
       </div>
     </div>

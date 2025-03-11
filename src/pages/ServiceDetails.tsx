@@ -133,6 +133,10 @@ const ServiceDetails = () => {
   
   const service = servicesData[id as keyof typeof servicesData];
 
+  const handleBookAppointment = () => {
+    navigate('/calendar');
+  };
+
   return (
     <MobileLayout>
       <div className="flex flex-col min-h-full">
@@ -169,7 +173,7 @@ const ServiceDetails = () => {
           </div>
           
           <button 
-            onClick={() => navigate('/calendar')}
+            onClick={handleBookAppointment}
             className="w-full bg-health-primary text-white py-3 rounded-xl font-medium flex items-center justify-center gap-2"
           >
             <Calendar size={20} />
