@@ -19,6 +19,8 @@ import Help from "./pages/Help";
 import ProfileDetails from "./pages/ProfileDetails";
 import PasswordSettings from "./pages/PasswordSettings";
 import DeleteAccount from "./pages/DeleteAccount";
+import Services from "./pages/Services";
+import ServiceDetails from "./pages/ServiceDetails";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +40,8 @@ const App = () => (
           <Route path="/top-doctors" element={<TopDoctors />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/doctor/:id" element={<DoctorDetails />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/service/:id" element={<ServiceDetails />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/notifications" element={<NotificationSettings />} />
           <Route path="/settings/password" element={<PasswordSettings />} />
