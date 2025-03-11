@@ -1,106 +1,99 @@
 
-import React, { useState } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
-import { User, Settings, HelpCircle, LogOut, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { ChevronRight, UserRound, Heart, Bell, Lock, HelpCircle, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
-import LogoutDialog from "@/components/LogoutDialog";
-
-const ProfileMenuItem = ({ 
-  icon, 
-  title, 
-  to = "#",
-  hideChevron = false
-}: { 
-  icon: React.ReactNode; 
-  title: string; 
-  to?: string;
-  hideChevron?: boolean;
-}) => (
-  <Link to={to} className="flex items-center justify-between p-4 bg-white rounded-xl mb-3">
-    <div className="flex items-center gap-3">
-      <div className="h-10 w-10 rounded-xl bg-health-primary flex items-center justify-center">
-        {icon}
-      </div>
-      <span className="font-medium text-base">{title}</span>
-    </div>
-    {!hideChevron && <ChevronRight className="text-gray-400" size={20} />}
-  </Link>
-);
+import { toast } from "@/hooks/use-toast";
 
 const Profile = () => {
-  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogoutClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setShowLogoutDialog(true);
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    toast({
+      title: "Déconnexion réussie",
+      description: "À bientôt!",
+    });
+    navigate("/login");
   };
+
+  const menuItems = [
+    {
+      icon: <UserRound className="text-health-primary" />,
+      title: "Mon profil",
+      path: "/profile/details",
+    },
+    {
+      icon: <Heart className="text-health-primary" />,
+      title: "Médecins favoris",
+      path: "/favourite-doctors",
+    },
+    {
+      icon: <Bell className="text-health-primary" />,
+      title: "Notifications",
+      path: "/notifications",
+    },
+    {
+      icon: <Lock className="text-health-primary" />,
+      title: "Paramètres",
+      path: "/settings",
+    },
+    {
+      icon: <HelpCircle className="text-health-primary" />,
+      title: "Aide",
+      path: "/help",
+    },
+  ];
 
   return (
     <MobileLayout>
-      {/* User Profile Header */}
-      <div className="bg-health-primary text-white p-6 pt-5 pb-8 rounded-b-3xl mb-4">
-        <div className="flex items-center">
-          <div className="relative">
-            <img 
-              src="/lovable-uploads/5bf871cd-3793-41a5-9a81-59bb21e3585a.png"
-              alt="Profile" 
-              className="w-16 h-16 rounded-full object-cover border-2 border-white" 
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-6">Profil</h1>
+
+        <div className="flex items-center bg-white rounded-xl p-4 shadow-sm mb-6">
+          <div className="h-16 w-16 bg-health-gray rounded-full overflow-hidden mr-4">
+            <img
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964&auto=format&fit=crop"
+              alt="Profile"
+              className="h-full w-full object-cover"
             />
-            <button className="absolute bottom-0 right-0 bg-white rounded-full p-1">
-              <User size={14} className="text-health-primary" />
-            </button>
           </div>
-          <div className="ml-4">
-            <h2 className="text-xl font-semibold">Savannah Nguyen</h2>
-            <p className="text-sm opacity-90">+237 677732845</p>
-            <p className="text-sm opacity-90">savannahnngue@gmail.com</p>
+          <div>
+            <h2 className="font-bold">Sophie Martin</h2>
+            <p className="text-gray-500 text-sm">sophie.martin@example.com</p>
           </div>
         </div>
-      </div>
 
-      {/* Menu Items */}
-      <div className="px-4">
-        <ProfileMenuItem 
-          icon={<User size={22} className="text-white" />} 
-          title="Profil" 
-          to="/profile/details"
-        />
-        <ProfileMenuItem 
-          icon={<Settings size={22} className="text-white" />} 
-          title="Paramètres" 
-          to="/settings"
-        />
-        <ProfileMenuItem 
-          icon={<HelpCircle size={22} className="text-white" />} 
-          title="Aide" 
-          to="/help"
-        />
-        <a
-          href="#"
-          onClick={handleLogoutClick}
-          className="flex items-center p-4 bg-white rounded-xl mb-3"
-        >
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-health-primary flex items-center justify-center">
-              <LogOut size={22} className="text-white" />
-            </div>
-            <span className="font-medium text-base">Déconnexion</span>
+        <Card className="mb-6">
+          <div className="divide-y">
+            {menuItems.map((item, index) => (
+              <Link
+                key={index}
+                to={item.path}
+                className="flex items-center justify-between p-4 hover:bg-gray-50"
+              >
+                <div className="flex items-center">
+                  <div className="mr-3">{item.icon}</div>
+                  <span>{item.title}</span>
+                </div>
+                <ChevronRight size={20} className="text-gray-400" />
+              </Link>
+            ))}
           </div>
-        </a>
-      </div>
+        </Card>
 
-      {/* Logout Confirmation Dialog */}
-      {showLogoutDialog && (
-        <LogoutDialog
-          onClose={() => setShowLogoutDialog(false)}
-          onConfirm={() => {
-            // Handle logout logic here
-            console.log("User logged out");
-            setShowLogoutDialog(false);
-            // Redirect to login page or perform other logout actions
-          }}
-        />
-      )}
+        <Button
+          variant="outline"
+          className="w-full flex items-center justify-center gap-2 border-red-500 text-red-500 hover:bg-red-50 hover:text-red-600 mt-6"
+          onClick={handleLogout}
+        >
+          <LogOut size={18} />
+          Se déconnecter
+        </Button>
+      </div>
     </MobileLayout>
   );
 };
