@@ -40,10 +40,16 @@ const Login = () => {
   const onSubmit = (data: LoginFormValues) => {
     // For demo purposes, we're just logging in with any valid form submission
     console.log("Login credentials:", data);
+    
+    // Set authentication state in localStorage
+    localStorage.setItem("isAuthenticated", "true");
+    
     toast({
       title: "Connexion réussie",
       description: "Bienvenue sur Forever Care",
     });
+    
+    // Navigate to home page
     navigate("/");
   };
 
