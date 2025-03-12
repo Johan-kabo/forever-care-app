@@ -25,25 +25,72 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Check for authentication status (simulated for demo)
+  // Check for authentication status
   useEffect(() => {
-    const userAuth = localStorage.getItem("isAuthenticated");
-    if (userAuth === "true") {
-      setIsAuthenticated(true);
-    }
+    const checkAuth = async () => {
+      try {
+        // Get the current session
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session) {
+          setIsAuthenticated(true);
+          localStorage.setItem("isAuthenticated", "true");
+        } else {
+          setIsAuthenticated(false);
+          localStorage.removeItem("isAuthenticated");
+        }
+      } catch (error) {
+        console.error("Error checking auth status:", error);
+        setIsAuthenticated(false);
+        localStorage.removeItem("isAuthenticated");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+
+    // Subscribe to auth changes
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        setIsAuthenticated(true);
+        localStorage.setItem("isAuthenticated", "true");
+        toast({
+          title: "Connexion réussie",
+          description: "Vous êtes maintenant connecté",
+        });
+      } else if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false);
+        localStorage.removeItem("isAuthenticated");
+        toast({
+          title: "Déconnexion réussie",
+          description: "Vous êtes maintenant déconnecté",
+        });
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
-  // Function to handle login and logout for our demo
-  const handleAuthChange = (status: boolean) => {
-    setIsAuthenticated(status);
-    localStorage.setItem("isAuthenticated", status.toString());
-  };
+  // If still loading, you could show a loading spinner
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-health-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

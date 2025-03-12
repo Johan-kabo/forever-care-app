@@ -17,6 +17,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Adresse email invalide" }),
@@ -27,6 +28,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const form = useForm<LoginFormValues>({
@@ -37,20 +39,39 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    // For demo purposes, we're just logging in with any valid form submission
-    console.log("Login credentials:", data);
+  const onSubmit = async (data: LoginFormValues) => {
+    setIsLoading(true);
     
-    // Set authentication state in localStorage
-    localStorage.setItem("isAuthenticated", "true");
-    
-    toast({
-      title: "Connexion réussie",
-      description: "Bienvenue sur Forever Care",
-    });
-    
-    // Navigate to home page
-    navigate("/");
+    try {
+      // Login with Supabase
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Set authentication state
+      localStorage.setItem("isAuthenticated", "true");
+      
+      toast({
+        title: "Connexion réussie",
+        description: "Bienvenue sur Forever Care",
+      });
+      
+      // Navigate to home page
+      navigate("/");
+    } catch (error: any) {
+      toast({
+        title: "Erreur de connexion",
+        description: error.message || "Email ou mot de passe incorrect",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -123,8 +144,12 @@ const Login = () => {
               </Link>
             </div>
 
-            <Button type="submit" className="w-full bg-health-primary">
-              Se connecter
+            <Button 
+              type="submit" 
+              className="w-full bg-health-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? "Connexion en cours..." : "Se connecter"}
             </Button>
 
             <div className="text-center mt-6">

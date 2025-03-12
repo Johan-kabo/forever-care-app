@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
 
 const countryOptions = [
   { value: "fr", label: "France", flag: "🇫🇷", code: "+33" },
@@ -57,6 +58,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const form = useForm<RegisterFormValues>({
@@ -71,7 +73,9 @@ const Register = () => {
     },
   });
 
-  const onSubmit = (data: RegisterFormValues) => {
+  const onSubmit = async (data: RegisterFormValues) => {
+    setIsLoading(true);
+    
     // Get the selected country code from the options array
     const selectedCountry = countryOptions.find(
       (country) => country.value === data.phoneCountry
@@ -80,16 +84,42 @@ const Register = () => {
       ? `${selectedCountry.code} ${data.phoneNumber}`
       : data.phoneNumber;
     
-    console.log("Registration data:", {
-      ...data,
-      fullPhoneNumber: phoneWithCode,
-    });
-    
-    toast({
-      title: "Inscription réussie",
-      description: "Votre compte a été créé avec succès",
-    });
-    navigate("/login");
+    try {
+      // Register the user with Supabase
+      const { data: authData, error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            name: data.name,
+            phone: phoneWithCode,
+          }
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Inscription réussie",
+        description: "Votre compte a été créé avec succès",
+      });
+      
+      // Set authentication state
+      localStorage.setItem("isAuthenticated", "true");
+      
+      // Navigate to home page
+      navigate("/");
+    } catch (error: any) {
+      toast({
+        title: "Erreur d'inscription",
+        description: error.message || "Une erreur est survenue lors de l'inscription",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -262,8 +292,12 @@ const Register = () => {
               )}
             />
 
-            <Button type="submit" className="w-full bg-health-primary mt-3">
-              S'inscrire
+            <Button 
+              type="submit" 
+              className="w-full bg-health-primary mt-3"
+              disabled={isLoading}
+            >
+              {isLoading ? "Inscription en cours..." : "S'inscrire"}
             </Button>
 
             <div className="text-center mt-4">

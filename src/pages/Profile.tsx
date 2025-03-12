@@ -7,17 +7,32 @@ import { Card } from "@/components/ui/card";
 import { ChevronRight, UserRound, Heart, Bell, Lock, HelpCircle, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Profile = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    toast({
-      title: "Déconnexion réussie",
-      description: "À bientôt!",
-    });
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        throw error;
+      }
+      
+      localStorage.removeItem("isAuthenticated");
+      toast({
+        title: "Déconnexion réussie",
+        description: "À bientôt!",
+      });
+      navigate("/login");
+    } catch (error: any) {
+      toast({
+        title: "Erreur de déconnexion",
+        description: error.message || "Une erreur est survenue lors de la déconnexion",
+        variant: "destructive",
+      });
+    }
   };
 
   const menuItems = [
