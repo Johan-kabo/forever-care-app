@@ -13,14 +13,39 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Phone } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const countryOptions = [
+  { value: "fr", label: "France", flag: "🇫🇷", code: "+33" },
+  { value: "us", label: "États-Unis", flag: "🇺🇸", code: "+1" },
+  { value: "gb", label: "Royaume-Uni", flag: "🇬🇧", code: "+44" },
+  { value: "de", label: "Allemagne", flag: "🇩🇪", code: "+49" },
+  { value: "es", label: "Espagne", flag: "🇪🇸", code: "+34" },
+  { value: "it", label: "Italie", flag: "🇮🇹", code: "+39" },
+  { value: "ca", label: "Canada", flag: "🇨🇦", code: "+1" },
+  { value: "be", label: "Belgique", flag: "🇧🇪", code: "+32" },
+  { value: "ch", label: "Suisse", flag: "🇨🇭", code: "+41" },
+  { value: "ma", label: "Maroc", flag: "🇲🇦", code: "+212" },
+  { value: "cm", label: "Cameroun", flag: "🇨🇲", code: "+237" },
+  { value: "sn", label: "Sénégal", flag: "🇸🇳", code: "+221" },
+  { value: "ci", label: "Côte d'Ivoire", flag: "🇨🇮", code: "+225" },
+];
 
 const registerSchema = z.object({
   name: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères" }),
   email: z.string().email({ message: "Adresse email invalide" }),
+  phoneCountry: z.string().default("fr"),
+  phoneNumber: z.string().min(6, { message: "Numéro de téléphone invalide" }),
   password: z.string().min(6, { message: "Mot de passe doit contenir au moins 6 caractères" }),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -39,13 +64,27 @@ const Register = () => {
     defaultValues: {
       name: "",
       email: "",
+      phoneCountry: "fr",
+      phoneNumber: "",
       password: "",
       confirmPassword: "",
     },
   });
 
   const onSubmit = (data: RegisterFormValues) => {
-    console.log("Registration data:", data);
+    // Get the selected country code from the options array
+    const selectedCountry = countryOptions.find(
+      (country) => country.value === data.phoneCountry
+    );
+    const phoneWithCode = selectedCountry
+      ? `${selectedCountry.code} ${data.phoneNumber}`
+      : data.phoneNumber;
+    
+    console.log("Registration data:", {
+      ...data,
+      fullPhoneNumber: phoneWithCode,
+    });
+    
     toast({
       title: "Inscription réussie",
       description: "Votre compte a été créé avec succès",
@@ -108,6 +147,65 @@ const Register = () => {
                 </FormItem>
               )}
             />
+
+            <div className="grid grid-cols-12 gap-3">
+              <FormField
+                control={form.control}
+                name="phoneCountry"
+                render={({ field }) => (
+                  <FormItem className="col-span-4">
+                    <FormLabel>Pays</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pays" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {countryOptions.map((country) => (
+                          <SelectItem
+                            key={country.value}
+                            value={country.value}
+                            className="flex items-center"
+                          >
+                            <span className="mr-2">{country.flag}</span>
+                            <span>{country.code}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem className="col-span-8">
+                    <FormLabel>Téléphone</FormLabel>
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <Phone size={18} />
+                      </div>
+                      <FormControl>
+                        <Input
+                          type="tel"
+                          placeholder="612345678"
+                          className="pl-10"
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
