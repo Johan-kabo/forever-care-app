@@ -1,7 +1,6 @@
 
 import React from "react";
 import { Star } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 interface DoctorCardProps {
   id?: string;
@@ -10,6 +9,7 @@ interface DoctorCardProps {
   rating: number;
   imageUrl: string;
   horizontal?: boolean;
+  onClick?: () => void;
 }
 
 const DoctorCard: React.FC<DoctorCardProps> = ({
@@ -19,11 +19,12 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
   rating,
   imageUrl,
   horizontal = false,
+  onClick,
 }) => {
-  const navigate = useNavigate();
-  
   const handleClick = () => {
-    navigate(`/doctor/${id}`);
+    if (onClick) {
+      onClick();
+    }
   };
   
   if (horizontal) {

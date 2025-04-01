@@ -5,25 +5,30 @@ import { Search, MoreVertical, Send, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import VoiceRecorder from "@/components/VoiceRecorder";
 import FileUpload from "@/components/FileUpload";
 import MessageContent from "@/components/MessageContent";
+import DoctorsList from "@/components/DoctorsList";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Sample conversations data
 const conversations = [
   {
-    id: 1,
+    id: "1",
     doctor: {
+      id: "doc-1",
       name: "Dr. Emma Wilson",
-      avatar: "/lovable-uploads/5bf871cd-3793-41a5-9a81-59bb21e3585a.png",
       specialty: "Cardiologue",
-      lastSeen: "En ligne"
+      rating: 4.9,
+      imageUrl: "/lovable-uploads/5bf871cd-3793-41a5-9a81-59bb21e3585a.png",
+      lastSeen: "En ligne",
+      clinic: "Clinique CardioSanté",
+      reviews: 120
     },
     messages: [
       { id: 1, text: "Bonjour, comment puis-je vous aider aujourd'hui?", isDoctor: true, time: "10:30", message_type: "text" },
@@ -35,12 +40,16 @@ const conversations = [
     unreadCount: 0
   },
   {
-    id: 2,
+    id: "2",
     doctor: {
+      id: "doc-2",
       name: "Dr. Michael Chen",
-      avatar: "/lovable-uploads/5bf871cd-3793-41a5-9a81-59bb21e3585a.png",
       specialty: "Dermatologue",
-      lastSeen: "Il y a 2h"
+      rating: 4.7,
+      imageUrl: "/lovable-uploads/5bf871cd-3793-41a5-9a81-59bb21e3585a.png",
+      lastSeen: "Il y a 2h",
+      clinic: "Centre Dermatologique",
+      reviews: 98
     },
     messages: [
       { id: 1, text: "Bonjour, j'ai examiné votre dossier. Avez-vous suivi le traitement?", isDoctor: true, time: "Hier" },
@@ -51,12 +60,16 @@ const conversations = [
     unreadCount: 1
   },
   {
-    id: 3,
+    id: "3",
     doctor: {
+      id: "doc-3",
       name: "Dr. Sarah Johnson",
-      avatar: "/lovable-uploads/5bf871cd-3793-41a5-9a81-59bb21e3585a.png",
       specialty: "Ophtalmologue",
-      lastSeen: "Il y a 1j"
+      rating: 4.8,
+      imageUrl: "/lovable-uploads/5bf871cd-3793-41a5-9a81-59bb21e3585a.png",
+      lastSeen: "Il y a 1j",
+      clinic: "Institut de la Vision",
+      reviews: 155
     },
     messages: [
       { id: 1, text: "Vos résultats d'examen sont disponibles.", isDoctor: true, time: "Lun" },
@@ -66,6 +79,16 @@ const conversations = [
     unreadCount: 2
   }
 ];
+
+// Transform conversations into a format compatible with DoctorsList
+const transformConversationsForDoctorsList = (conversations) => {
+  return conversations.map(conv => ({
+    ...conv.doctor,
+    lastMessage: conv.lastMessage,
+    lastMessageTime: conv.lastMessageTime,
+    unreadCount: conv.unreadCount
+  }));
+};
 
 const Messages = () => {
   const [view, setView] = useState<"list" | "chat">("list");
@@ -85,9 +108,12 @@ const Messages = () => {
             conv.doctor.specialty.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleOpenChat = (conversation) => {
-    setActiveConversation(conversation);
-    setView("chat");
+  const handleOpenChat = (doctorWithMessages) => {
+    const conversation = conversations.find(conv => conv.doctor.id === doctorWithMessages.id);
+    if (conversation) {
+      setActiveConversation(conversation);
+      setView("chat");
+    }
   };
 
   const handleBackToList = () => {
@@ -207,80 +233,62 @@ const Messages = () => {
             </div>
 
             {/* Conversations List */}
-            <div className="flex-1 overflow-y-auto">
-              {filteredConversations.length > 0 ? (
-                filteredConversations.map((conversation) => (
-                  <div 
-                    key={conversation.id} 
-                    className="p-4 border-b hover:bg-gray-50 active:bg-gray-100 cursor-pointer"
-                    onClick={() => handleOpenChat(conversation)}
-                  >
-                    <div className="flex items-start">
-                      <div className="relative">
-                        <Avatar className="w-12 h-12 rounded-full">
-                          <img 
-                            src={conversation.doctor.avatar} 
-                            alt={conversation.doctor.name} 
-                            className="w-full h-full object-cover"
-                          />
-                        </Avatar>
-                        {conversation.doctor.lastSeen === "En ligne" && (
-                          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                        )}
-                      </div>
-
-                      <div className="ml-3 flex-1">
-                        <div className="flex justify-between items-center">
-                          <h3 className="font-medium text-gray-900">{conversation.doctor.name}</h3>
-                          <span className="text-xs text-gray-500">{formatDate(conversation.lastMessageTime)}</span>
-                        </div>
-                        <p className="text-sm text-gray-500 line-clamp-1">{conversation.lastMessage}</p>
-                      </div>
-
-                      {conversation.unreadCount > 0 && (
-                        <div className="ml-2 bg-health-primary text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                          {conversation.unreadCount}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="p-8 text-center text-gray-500">
-                  Aucune conversation trouvée
-                </div>
-              )}
-            </div>
+            <DoctorsList 
+              doctors={transformConversationsForDoctorsList(filteredConversations)} 
+              forMessages 
+              onSelectDoctor={handleOpenChat} 
+            />
           </>
         ) : (
           // Chat View
           <>
-            {/* Chat Header */}
-            <div className="bg-white border-b p-3 flex items-center sticky top-0 z-10">
-              <button 
-                onClick={handleBackToList}
-                className="mr-2 p-1 rounded-full hover:bg-gray-100"
-              >
-                <ArrowLeft size={20} />
-              </button>
-              
-              <div className="flex items-center flex-1">
-                <Avatar className="w-10 h-10 rounded-full mr-2">
-                  <img 
-                    src={activeConversation.doctor.avatar} 
-                    alt={activeConversation.doctor.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </Avatar>
-                <div>
-                  <h2 className="font-semibold text-gray-900">{activeConversation.doctor.name}</h2>
-                  <p className="text-xs text-green-600">{activeConversation.doctor.lastSeen}</p>
+            {/* Chat Header with Doctor Profile */}
+            <div className="bg-white border-b sticky top-0 z-10">
+              <div className="p-3 flex items-center">
+                <button 
+                  onClick={handleBackToList}
+                  className="mr-2 p-1 rounded-full hover:bg-gray-100"
+                >
+                  <ArrowLeft size={20} />
+                </button>
+                
+                <div className="flex items-center flex-1">
+                  <Avatar className="w-10 h-10 rounded-full mr-2">
+                    <AvatarImage
+                      src={activeConversation.doctor.imageUrl}
+                      alt={activeConversation.doctor.name}
+                    />
+                    <AvatarFallback>{activeConversation.doctor.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h2 className="font-semibold text-gray-900">{activeConversation.doctor.name}</h2>
+                    <p className="text-xs text-green-600">{activeConversation.doctor.lastSeen}</p>
+                  </div>
                 </div>
+                
+                <button className="text-gray-600 p-1 rounded-full hover:bg-gray-100">
+                  <MoreVertical size={20} />
+                </button>
               </div>
               
-              <button className="text-gray-600 p-1 rounded-full hover:bg-gray-100">
-                <MoreVertical size={20} />
-              </button>
+              {/* Doctor info card */}
+              <div className="px-4 pb-3">
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-sm font-medium">{activeConversation.doctor.specialty}</p>
+                      <p className="text-xs text-gray-500">{activeConversation.doctor.clinic}</p>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="flex items-center mr-2">
+                        <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                        <span className="text-sm font-medium ml-1">{activeConversation.doctor.rating}</span>
+                      </div>
+                      <span className="text-xs text-gray-500">({activeConversation.doctor.reviews} avis)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Messages */}

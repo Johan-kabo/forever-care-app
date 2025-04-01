@@ -19,7 +19,7 @@ const MessageContent: React.FC<MessageContentProps> = ({ message }) => {
         return (
           <div className="mb-1">
             <audio src={message.attachment_url} controls className="max-w-full" />
-            <p className="mt-1">{message.text}</p>
+            {message.text && <p className="mt-1">{message.text}</p>}
           </div>
         );
       case "image":
@@ -30,14 +30,14 @@ const MessageContent: React.FC<MessageContentProps> = ({ message }) => {
               alt="Image"
               className="max-w-full rounded-lg mb-1 max-h-60 object-cover" 
             />
-            <p>{message.text}</p>
+            {message.text && <p>{message.text}</p>}
           </div>
         );
       case "video":
         return (
           <div className="mb-1">
             <video src={message.attachment_url} controls className="max-w-full rounded-lg mb-1" />
-            <p>{message.text}</p>
+            {message.text && <p>{message.text}</p>}
           </div>
         );
       case "document":
@@ -51,7 +51,7 @@ const MessageContent: React.FC<MessageContentProps> = ({ message }) => {
             >
               Télécharger le document
             </a>
-            <p>{message.text}</p>
+            {message.text && <p>{message.text}</p>}
           </div>
         );
       default:
