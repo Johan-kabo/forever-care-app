@@ -19,8 +19,8 @@ const CategoryTabs: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState("all");
 
   return (
-    <div className="flex gap-3 mb-6 overflow-x-auto pb-2 no-scrollbar animate-slideUp" style={{ animationDelay: "0.2s" }}>
-      {categories.map((category, index) => (
+    <div className="flex gap-3 mb-6 overflow-x-auto pb-2 no-scrollbar">
+      {categories.map((category) => (
         <button
           key={category.id}
           onClick={() => setActiveCategory(category.id)}
@@ -30,7 +30,6 @@ const CategoryTabs: React.FC = () => {
               ? "bg-health-primary text-white"
               : "bg-health-lightGray text-gray-600"
           )}
-          style={{ animationDelay: `${0.1 * index}s` }}
         >
           <span>{category.emoji}</span>
           <span>{category.name}</span>
