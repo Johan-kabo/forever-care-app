@@ -120,28 +120,34 @@ export type Database = {
       }
       messages: {
         Row: {
+          attachment_url: string | null
           content: string
           created_at: string
           id: string
           is_read: boolean
+          message_type: string
           receiver_id: string
           sender_id: string
           updated_at: string
         }
         Insert: {
+          attachment_url?: string | null
           content: string
           created_at?: string
           id?: string
           is_read?: boolean
+          message_type?: string
           receiver_id: string
           sender_id: string
           updated_at?: string
         }
         Update: {
+          attachment_url?: string | null
           content?: string
           created_at?: string
           id?: string
           is_read?: boolean
+          message_type?: string
           receiver_id?: string
           sender_id?: string
           updated_at?: string

@@ -8,6 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import VoiceRecorder from "@/components/VoiceRecorder";
+import FileUpload from "@/components/FileUpload";
+import MessageContent from "@/components/MessageContent";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { v4 as uuidv4 } from "uuid";
 
 // Sample conversations data
 const conversations = [
@@ -20,9 +26,9 @@ const conversations = [
       lastSeen: "En ligne"
     },
     messages: [
-      { id: 1, text: "Bonjour, comment puis-je vous aider aujourd'hui?", isDoctor: true, time: "10:30" },
-      { id: 2, text: "J'ai quelques questions sur mes médicaments récemment prescrits", isDoctor: false, time: "10:32" },
-      { id: 3, text: "Bien sûr, je serais ravi de clarifier tous vos doutes. Quelles questions avez-vous?", isDoctor: true, time: "10:33" },
+      { id: 1, text: "Bonjour, comment puis-je vous aider aujourd'hui?", isDoctor: true, time: "10:30", message_type: "text" },
+      { id: 2, text: "J'ai quelques questions sur mes médicaments récemment prescrits", isDoctor: false, time: "10:32", message_type: "text" },
+      { id: 3, text: "Bien sûr, je serais ravi de clarifier tous vos doutes. Quelles questions avez-vous?", isDoctor: true, time: "10:33", message_type: "text" },
     ],
     lastMessage: "Bien sûr, je serais ravi de clarifier tous vos doutes. Quelles questions avez-vous?",
     lastMessageTime: "10:33",
@@ -67,6 +73,11 @@ const Messages = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [attachmentInfo, setAttachmentInfo] = useState<{
+    url: string;
+    type: string;
+  } | null>(null);
 
   // Filter conversations based on search term
   const filteredConversations = conversations.filter(
@@ -83,22 +94,29 @@ const Messages = () => {
     setView("list");
   };
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() === "") return;
+  const handleSendMessage = async () => {
+    if ((newMessage.trim() === "" && !attachmentInfo) || isRecording) return;
     
     // Create a new message object
     const newMessageObj = {
       id: activeConversation.messages.length + 1,
-      text: newMessage,
+      text: newMessage.trim() || (attachmentInfo ? "Pièce jointe" : ""),
       isDoctor: false,
-      time: format(new Date(), 'HH:mm')
+      time: format(new Date(), 'HH:mm'),
+      message_type: attachmentInfo ? attachmentInfo.type : "text",
+      attachment_url: attachmentInfo?.url
     };
     
     // Update the active conversation with the new message
     const updatedConversation = {
       ...activeConversation,
       messages: [...activeConversation.messages, newMessageObj],
-      lastMessage: newMessage,
+      lastMessage: newMessage.trim() || (
+        attachmentInfo?.type === "image" ? "Image" : 
+        attachmentInfo?.type === "audio" ? "Message vocal" :
+        attachmentInfo?.type === "video" ? "Vidéo" :
+        attachmentInfo?.type === "document" ? "Document" : "Pièce jointe"
+      ),
       lastMessageTime: format(new Date(), 'HH:mm')
     };
     
@@ -107,9 +125,49 @@ const Messages = () => {
       conv.id === activeConversation.id ? updatedConversation : conv
     );
     
-    // Update state
-    setActiveConversation(updatedConversation);
-    setNewMessage("");
+    try {
+      // In a real app, send the message to the backend
+      // Here we're just updating the local state
+      
+      // Update state
+      setActiveConversation(updatedConversation);
+      setNewMessage("");
+      setAttachmentInfo(null);
+      
+      // You could send the message to Supabase here
+      // const { error } = await supabase.from('messages').insert({
+      //   sender_id: user.id,
+      //   receiver_id: doctor.id,
+      //   content: newMessage.trim(),
+      //   message_type: attachmentInfo ? attachmentInfo.type : "text",
+      //   attachment_url: attachmentInfo?.url
+      // });
+      // if (error) throw error;
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'envoyer le message. Veuillez réessayer.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleFileUploaded = (url: string, fileType: string) => {
+    setAttachmentInfo({ url, type: fileType });
+    toast({
+      title: "Fichier téléchargé",
+      description: "Votre fichier est prêt à être envoyé",
+    });
+  };
+
+  const handleVoiceUploaded = (url: string) => {
+    setAttachmentInfo({ url, type: "audio" });
+    handleSendMessage();
+  };
+
+  const handleCancelAttachment = () => {
+    setAttachmentInfo(null);
   };
 
   // Scroll to bottom of messages when chat is opened or new message is sent
@@ -228,44 +286,69 @@ const Messages = () => {
             {/* Messages */}
             <div className="flex-1 p-4 bg-gray-50 overflow-y-auto space-y-4">
               {activeConversation.messages.map((message) => (
-                <div 
-                  key={message.id}
-                  className={cn(
-                    "max-w-[80%] p-3 rounded-t-xl",
-                    message.isDoctor 
-                      ? "bg-white rounded-br-xl rounded-bl-none ml-0 mr-auto shadow-sm" 
-                      : "bg-health-primary text-white rounded-bl-xl rounded-br-none mr-0 ml-auto"
-                  )}
-                >
-                  <p className="break-words">{message.text}</p>
-                  <span className={cn(
-                    "text-xs block mt-1 text-right", 
-                    message.isDoctor ? "text-gray-500" : "text-white/80"
-                  )}>
-                    {message.time}
-                  </span>
-                </div>
+                <MessageContent key={message.id} message={message} />
               ))}
               <div ref={messagesEndRef} />
             </div>
 
+            {/* Attachment Preview */}
+            {attachmentInfo && (
+              <div className="bg-health-secondary p-2 flex items-center justify-between">
+                <div className="flex items-center">
+                  <span className="text-sm font-medium text-health-primary">
+                    {attachmentInfo.type === "image" ? "Image" : 
+                     attachmentInfo.type === "audio" ? "Message vocal" :
+                     attachmentInfo.type === "video" ? "Vidéo" : "Document"}
+                  </span>
+                </div>
+                <button
+                  onClick={handleCancelAttachment}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
             {/* Message Input */}
             <div className="p-3 bg-white border-t flex items-center sticky bottom-0 z-10">
-              <Input
-                type="text"
-                placeholder="Écrivez votre message..."
-                className="flex-1 border border-gray-300 rounded-full py-2 px-4 focus:outline-none focus:ring-1 focus:ring-health-primary"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              />
-              <Button 
-                className="ml-2 bg-health-primary text-white p-2 rounded-full h-10 w-10"
-                onClick={handleSendMessage}
-                disabled={newMessage.trim() === ""}
-              >
-                <Send size={18} />
-              </Button>
+              {!isRecording && (
+                <FileUpload onFileUploaded={handleFileUploaded} />
+              )}
+              
+              {!isRecording && !attachmentInfo && (
+                <Input
+                  type="text"
+                  placeholder="Écrivez votre message..."
+                  className="flex-1 border border-gray-300 rounded-full py-2 px-4 focus:outline-none focus:ring-1 focus:ring-health-primary mx-2"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                />
+              )}
+              
+              {!attachmentInfo && (
+                <VoiceRecorder 
+                  onRecordingComplete={handleVoiceUploaded} 
+                  isRecording={isRecording}
+                  setIsRecording={setIsRecording}
+                />
+              )}
+              
+              {!isRecording && (
+                <Button 
+                  className={cn(
+                    "ml-2 text-white p-2 rounded-full h-10 w-10",
+                    (newMessage.trim() !== "" || attachmentInfo) 
+                      ? "bg-health-primary" 
+                      : "bg-gray-300"
+                  )}
+                  onClick={handleSendMessage}
+                  disabled={newMessage.trim() === "" && !attachmentInfo}
+                >
+                  <Send size={18} />
+                </Button>
+              )}
             </div>
           </>
         )}
