@@ -2,7 +2,6 @@
 import React from "react";
 import MobileLayout from "@/components/MobileLayout";
 import SearchBar from "@/components/SearchBar";
-import CategoryTabs from "@/components/CategoryTabs";
 import SectionHeader from "@/components/SectionHeader";
 import DoctorsList from "@/components/DoctorsList";
 import ServicesList from "@/components/ServicesList";
@@ -114,8 +113,6 @@ const Index = () => {
             <SectionHeader title="Services médicaux" linkTo="/services" />
             <ServicesList />
           </div>
-          
-          <CategoryTabs />
           
           <div className="mb-8">
             <SectionHeader title="Médecins favoris" linkTo="/favourite-doctors" />
