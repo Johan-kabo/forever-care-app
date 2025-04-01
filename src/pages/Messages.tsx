@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import MobileLayout from "@/components/MobileLayout";
-import { Search, MoreVertical, Send, ArrowLeft } from "lucide-react";
+import { Search, MoreVertical, Send, ArrowLeft, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
