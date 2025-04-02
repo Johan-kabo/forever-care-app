@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import MobileLayout from "@/components/MobileLayout";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
@@ -9,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AppointmentForm from "@/components/AppointmentForm";
 import { toast } from "@/hooks/use-toast";
+import { Calendar } from "@/components/Calendar";
+import { useNavigate } from "react-router-dom";
 
 // Sample appointments data
 const initialAppointments = [
@@ -157,6 +158,42 @@ const Calendar = () => {
         )}
       </div>
     </MobileLayout>
+  );
+};
+
+const UpcomingAppointment = () => {
+  const navigate = useNavigate();
+  
+  const handleSubmit = (appointment: any) => {
+    console.log("Rescheduled appointment:", appointment);
+    toast({
+      title: "Rendez-vous reprogrammé",
+      description: `Votre rendez-vous a été reprogrammé pour le ${appointment.date} à ${appointment.time}`,
+    });
+  };
+  
+  return (
+    <div className="bg-white rounded-lg overflow-hidden border border-gray-100 mb-4">
+      <div className="flex p-4 items-center">
+        <div className="h-12 w-12 mr-3 bg-blue-50 rounded-full flex items-center justify-center text-health-primary">
+          <Calendar size={20} />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-medium">Dr. Jenny Wilson</h3>
+          <p className="text-sm text-gray-500">5 Mai, 9:00 AM</p>
+        </div>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm">Reprogrammer</Button>
+          </DialogTrigger>
+          <DialogContent className="p-0 sm:max-w-md">
+            <AppointmentForm 
+              onSubmit={handleSubmit}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
+    </div>
   );
 };
 

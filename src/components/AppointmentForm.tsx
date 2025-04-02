@@ -1,10 +1,8 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,7 +11,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Calendar as CalendarIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // Simple schema for the appointment
@@ -46,6 +44,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
   const navigate = useNavigate();
   const [selectedDay, setSelectedDay] = useState("5");
   const [selectedTime, setSelectedTime] = useState("9:00 AM");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -67,17 +66,26 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     "9:00 AM",
     "9:30 AM",
     "10:00 AM",
-    "10:30 AM"
+    "10:30 AM",
+    "11:00 AM",
+    "11:30 AM",
+    "14:00 PM",
+    "14:30 PM"
   ];
 
   const handleSubmit = () => {
-    onSubmit({
-      date: selectedDay,
-      time: selectedTime,
-      doctorId: doctor.id,
-      doctorName: doctor.name,
-      specialty: doctor.specialty,
-    });
+    setIsSubmitting(true);
+    // Simulate loading
+    setTimeout(() => {
+      onSubmit({
+        date: selectedDay,
+        time: selectedTime,
+        doctorId: doctor.id,
+        doctorName: doctor.name,
+        specialty: doctor.specialty,
+      });
+      setIsSubmitting(false);
+    }, 500);
   };
 
   return (
@@ -90,10 +98,11 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         >
           <ArrowLeft size={24} />
         </button>
+        <h1 className="text-xl font-semibold mx-auto">Prise de rendez-vous</h1>
       </div>
 
       {/* Doctor Information */}
-      <div className="px-4 pt-4 pb-6">
+      <div className="px-4 pt-2 pb-6">
         <div className="bg-health-primary rounded-xl p-6 text-white text-center">
           <div className="w-24 h-24 rounded-full mx-auto mb-3 overflow-hidden border-4 border-white">
             <img 
@@ -112,7 +121,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
 
       {/* Date Selection */}
       <div className="px-4 mb-6">
-        <h3 className="text-lg font-semibold mb-3">Appointment</h3>
+        <h3 className="text-lg font-semibold mb-3">Date du rendez-vous</h3>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div className="grid grid-cols-5 gap-2">
             {days.map((day) => (
@@ -140,7 +149,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
 
       {/* Time Selection */}
       <div className="px-4 mb-8">
-        <h3 className="text-lg font-semibold mb-3">Available Time</h3>
+        <h3 className="text-lg font-semibold mb-3">Horaires disponibles</h3>
         <div className="flex flex-wrap gap-2">
           {timeSlots.map((time) => (
             <button
@@ -159,13 +168,42 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         </div>
       </div>
 
+      {/* Summary */}
+      <div className="px-4 mb-8">
+        <h3 className="text-lg font-semibold mb-3">Récapitulatif</h3>
+        <div className="bg-health-secondary rounded-xl p-4">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="bg-health-primary rounded-full p-2">
+              <CalendarIcon size={18} className="text-white" />
+            </div>
+            <div>
+              <p className="text-gray-600 text-sm">Date</p>
+              <p className="font-medium">Mai {selectedDay}, 2024</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="bg-health-primary rounded-full p-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div>
+              <p className="text-gray-600 text-sm">Heure</p>
+              <p className="font-medium">{selectedTime}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Confirm Button */}
-      <div className="px-4 mt-auto mb-20">
+      <div className="px-4 mt-auto pb-20">
         <Button 
           onClick={handleSubmit}
+          disabled={isSubmitting}
           className="w-full bg-health-primary hover:bg-health-primary/90 text-lg py-6 rounded-xl"
         >
-          Confirm
+          {isSubmitting ? "Confirmation en cours..." : "Confirmer le rendez-vous"}
         </Button>
       </div>
 

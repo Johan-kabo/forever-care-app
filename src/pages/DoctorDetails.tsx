@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Users, Calendar, MessageCircle, Phone } from "lucide-react";
@@ -33,6 +32,10 @@ const DoctorDetails = () => {
       description: `Vous avez un rendez-vous avec ${doctor.name} le ${appointmentData.date} à ${appointmentData.time}`,
     });
     navigate('/calendar');
+  };
+
+  const handleBookAppointment = () => {
+    navigate('/appointment-booking', { state: { doctor } });
   };
 
   return (
@@ -121,31 +124,22 @@ const DoctorDetails = () => {
         </div>
         
         {/* Appointment Buttons */}
-        <Dialog>
-          <DialogTrigger asChild>
-            <button className="w-full bg-health-primary text-white py-3 rounded-xl flex items-center justify-center gap-2 mb-4">
-              <Calendar size={20} />
-              <span>Prendre rendez-vous</span>
-            </button>
-          </DialogTrigger>
-          <DialogContent className="p-0 sm:max-w-md">
-            <AppointmentForm 
-              onSubmit={handleAppointmentSubmit} 
-              doctor={{
-                id: doctor.id,
-                name: doctor.name,
-                specialty: doctor.specialty,
-                clinic: doctor.clinic,
-                imageUrl: doctor.imageUrl
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-        
-        <button className="w-full border border-health-primary text-health-primary py-3 rounded-xl flex items-center justify-center gap-2">
-          <Phone size={20} />
+        <div className="px-4 mb-6">
+          <button 
+            onClick={handleBookAppointment}
+            className="w-full bg-health-primary text-white py-3 rounded-xl flex items-center justify-center gap-2 mb-4"
+          >
+            <Calendar size={20} />
+            <span>Prendre rendez-vous</span>
+          </button>
+          
+          <button className="w-full border border-health-primary text-health-primary py-3 rounded-xl flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="phone">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </path>
+          </svg>
           <span>Appeler directement</span>
-        </button>
+        </div>
       </div>
     </div>
   );
