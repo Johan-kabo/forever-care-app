@@ -1,11 +1,12 @@
 
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Star, ArrowLeft, Users, Calendar, MessageCircle, Phone } from "lucide-react";
+import { ArrowLeft, Users, Calendar, MessageCircle, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import AppointmentForm from "@/components/AppointmentForm";
 import { toast } from "@/hooks/use-toast";
+import { Star } from "lucide-react";
 
 const DoctorDetails = () => {
   const { id } = useParams();
@@ -127,11 +128,17 @@ const DoctorDetails = () => {
               <span>Prendre rendez-vous</span>
             </button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Prendre un rendez-vous avec {doctor.name}</DialogTitle>
-            </DialogHeader>
-            <AppointmentForm onSubmit={handleAppointmentSubmit} />
+          <DialogContent className="p-0 sm:max-w-md">
+            <AppointmentForm 
+              onSubmit={handleAppointmentSubmit} 
+              doctor={{
+                id: doctor.id,
+                name: doctor.name,
+                specialty: doctor.specialty,
+                clinic: doctor.clinic,
+                imageUrl: doctor.imageUrl
+              }}
+            />
           </DialogContent>
         </Dialog>
         
