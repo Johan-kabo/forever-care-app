@@ -1,6 +1,7 @@
+
 import React, { useState } from "react";
 import MobileLayout from "@/components/MobileLayout";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon } from "lucide-react";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AppointmentForm from "@/components/AppointmentForm";
 import { toast } from "@/hooks/use-toast";
-import { Calendar } from "@/components/Calendar";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { useNavigate } from "react-router-dom";
 
 // Sample appointments data
@@ -176,7 +177,7 @@ const UpcomingAppointment = () => {
     <div className="bg-white rounded-lg overflow-hidden border border-gray-100 mb-4">
       <div className="flex p-4 items-center">
         <div className="h-12 w-12 mr-3 bg-blue-50 rounded-full flex items-center justify-center text-health-primary">
-          <Calendar size={20} />
+          <CalendarIcon size={20} />
         </div>
         <div className="flex-1">
           <h3 className="font-medium">Dr. Jenny Wilson</h3>
