@@ -1,9 +1,9 @@
 
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import MobileLayout from "@/components/MobileLayout";
 import AppointmentForm from "@/components/AppointmentForm";
 import { toast } from "@/hooks/use-toast";
-import { Calendar } from "lucide-react";
 
 const AppointmentBooking = () => {
   const navigate = useNavigate();
@@ -35,10 +35,14 @@ const AppointmentBooking = () => {
   }
 
   return (
-    <AppointmentForm 
-      onSubmit={handleAppointmentSubmit} 
-      doctor={doctor}
-    />
+    <MobileLayout>
+      <div className="h-full">
+        <AppointmentForm 
+          onSubmit={handleAppointmentSubmit} 
+          doctor={doctor}
+        />
+      </div>
+    </MobileLayout>
   );
 };
 

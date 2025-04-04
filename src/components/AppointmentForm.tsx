@@ -29,6 +29,7 @@ interface AppointmentFormProps {
     clinic?: string;
     imageUrl: string;
   };
+  initialDate?: string;
 }
 
 const AppointmentForm: React.FC<AppointmentFormProps> = ({ 
@@ -39,27 +40,38 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     specialty: "Senior Cardiologist and Surgeon",
     clinic: "Mirpur Medical College and Hospital",
     imageUrl: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=1170&auto=format&fit=crop"
-  } 
+  },
+  initialDate
 }) => {
   const navigate = useNavigate();
   const [selectedDay, setSelectedDay] = useState("5");
   const [selectedTime, setSelectedTime] = useState("9:00 AM");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Set initial day if provided
+  useEffect(() => {
+    if (initialDate) {
+      const day = initialDate.split('-')[2];
+      if (day) {
+        setSelectedDay(day);
+      }
+    }
+  }, [initialDate]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      date: "5",
-      time: "9:00 AM",
+      date: selectedDay,
+      time: selectedTime,
     },
   });
 
   const days = [
-    { day: "Sun", number: "3" },
-    { day: "Mon", number: "4" },
-    { day: "Tue", number: "5" },
-    { day: "Wed", number: "6" },
-    { day: "Thu", number: "7" },
+    { day: "Dim", number: "3" },
+    { day: "Lun", number: "4" },
+    { day: "Mar", number: "5" },
+    { day: "Mer", number: "6" },
+    { day: "Jeu", number: "7" },
   ];
 
   const timeSlots = [
@@ -89,9 +101,9 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white relative">
+    <div className="flex flex-col h-full bg-white relative">
       {/* Header with back button */}
-      <div className="p-4 flex items-center">
+      <div className="p-4 flex items-center bg-white sticky top-0 z-10 border-b border-gray-100">
         <button 
           onClick={() => navigate(-1)}
           className="p-2"
@@ -120,7 +132,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
       </div>
 
       {/* Date Selection */}
-      <div className="px-4 mb-6">
+      <div className="px-4 mb-6 overflow-auto">
         <h3 className="text-lg font-semibold mb-3">Date du rendez-vous</h3>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
           <div className="grid grid-cols-5 gap-2">
@@ -148,7 +160,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
       </div>
 
       {/* Time Selection */}
-      <div className="px-4 mb-8">
+      <div className="px-4 mb-8 overflow-auto">
         <h3 className="text-lg font-semibold mb-3">Horaires disponibles</h3>
         <div className="flex flex-wrap gap-2">
           {timeSlots.map((time) => (
@@ -197,7 +209,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
       </div>
 
       {/* Confirm Button */}
-      <div className="px-4 mt-auto pb-20">
+      <div className="px-4 mt-auto sticky bottom-20 pb-4 bg-white">
         <Button 
           onClick={handleSubmit}
           disabled={isSubmitting}
@@ -205,38 +217,6 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         >
           {isSubmitting ? "Confirmation en cours..." : "Confirmer le rendez-vous"}
         </Button>
-      </div>
-
-      {/* Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-gray-200 flex items-center justify-around">
-        <button className="flex flex-col items-center justify-center w-1/4 text-gray-500">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
-            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-          </svg>
-        </button>
-        <button className="flex flex-col items-center justify-center w-1/4 text-gray-500">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-            <line x1="16" x2="16" y1="2" y2="6" />
-            <line x1="8" x2="8" y1="2" y2="6" />
-            <line x1="3" x2="21" y1="10" y2="10" />
-          </svg>
-        </button>
-        <button className="flex flex-col items-center justify-center w-1/4 text-gray-500">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-          </svg>
-        </button>
-        <button className="flex flex-col items-center justify-center w-1/4 text-gray-500">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M18 20a6 6 0 0 0-12 0" />
-            <circle cx="12" cy="10" r="4" />
-            <circle cx="12" cy="12" r="10" />
-          </svg>
-        </button>
-        <div className="absolute bottom-0 left-0 right-0 h-0.5">
-          <div className="w-1/4 h-full bg-blue-900 mx-auto"></div>
-        </div>
       </div>
     </div>
   );
