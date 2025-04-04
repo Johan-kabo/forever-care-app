@@ -11,8 +11,10 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { ArrowLeft, Calendar as CalendarIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calendar as CalendarIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { format, addDays } from "date-fns";
+import { fr } from "date-fns/locale";
 
 // Simple schema for the appointment
 const formSchema = z.object({
@@ -47,6 +49,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
   const [selectedDay, setSelectedDay] = useState("5");
   const [selectedTime, setSelectedTime] = useState("9:00 AM");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentWeekStart, setCurrentWeekStart] = useState(new Date());
 
   // Set initial day if provided
   useEffect(() => {
@@ -66,13 +69,15 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
     },
   });
 
-  const days = [
-    { day: "Dim", number: "3" },
-    { day: "Lun", number: "4" },
-    { day: "Mar", number: "5" },
-    { day: "Mer", number: "6" },
-    { day: "Jeu", number: "7" },
-  ];
+  // Generate 7 days starting from currentWeekStart
+  const days = Array.from({ length: 7 }, (_, index) => {
+    const date = addDays(currentWeekStart, index);
+    return {
+      day: format(date, 'EEE', { locale: fr }).substring(0, 3),
+      number: format(date, 'd'),
+      fullDate: date,
+    };
+  });
 
   const timeSlots = [
     "9:00 AM",
@@ -98,6 +103,14 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
       });
       setIsSubmitting(false);
     }, 500);
+  };
+
+  const nextWeek = () => {
+    setCurrentWeekStart(addDays(currentWeekStart, 7));
+  };
+
+  const prevWeek = () => {
+    setCurrentWeekStart(addDays(currentWeekStart, -7));
   };
 
   return (
@@ -131,21 +144,32 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         </div>
       </div>
 
-      {/* Date Selection */}
+      {/* Date Selection with navigation buttons */}
       <div className="px-4 mb-6 overflow-auto">
         <h3 className="text-lg font-semibold mb-3">Date du rendez-vous</h3>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-          <div className="grid grid-cols-5 gap-2">
+          <div className="flex justify-between items-center mb-3">
+            <button onClick={prevWeek} className="p-1 rounded-full bg-gray-100">
+              <ArrowLeft size={16} className="text-gray-600" />
+            </button>
+            <span className="text-sm font-medium">
+              {format(currentWeekStart, 'MMMM yyyy', { locale: fr })}
+            </span>
+            <button onClick={nextWeek} className="p-1 rounded-full bg-gray-100">
+              <ArrowRight size={16} className="text-gray-600" />
+            </button>
+          </div>
+          <div className="grid grid-cols-7 gap-2">
             {days.map((day) => (
               <div 
-                key={day.day}
+                key={day.day + day.number}
                 className="flex flex-col items-center"
               >
-                <span className="text-sm text-gray-500 mb-1">{day.day}</span>
+                <span className="text-xs text-gray-500 mb-1">{day.day}</span>
                 <button
                   type="button"
                   onClick={() => setSelectedDay(day.number)}
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center text-base font-medium transition-colors ${
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-base font-medium transition-colors ${
                     selectedDay === day.number
                       ? "bg-health-primary text-white"
                       : "bg-gray-100 text-gray-700"
