@@ -208,8 +208,8 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         </div>
       </div>
 
-      {/* Confirm Button */}
-      <div className="px-4 mt-auto sticky bottom-20 pb-4 bg-white">
+      {/* Confirm Button - Repositioned to the bottom with a fixed position */}
+      <div className="px-4 mt-auto sticky bottom-0 pb-8 pt-4 bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <Button 
           onClick={handleSubmit}
           disabled={isSubmitting}
