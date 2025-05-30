@@ -21,7 +21,7 @@ const Profile = () => {
       bgColor: "bg-blue-500"
     },
     {
-      icon: <Heart className="text-white" size={20} />,
+      icon: <Heart className="text-white\" size={20} />,
       title: "Médecins favoris",
       path: "/favourite-doctors",
       bgColor: "bg-red-500"
@@ -33,7 +33,7 @@ const Profile = () => {
       bgColor: "bg-yellow-500"
     },
     {
-      icon: <Lock className="text-white" size={20} />,
+      icon: <Lock className="text-white\" size={20} />,
       title: "Paramètres",
       path: "/settings",
       bgColor: "bg-purple-500"
